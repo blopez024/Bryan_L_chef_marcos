@@ -1,6 +1,9 @@
 import { menu } from './data.js';
 import express from 'express'; // Import express
 const app = express(); //Instantiate a new instance of express
+const port = 8080;
+
+app.use(express.json());
 
 // Create a new endpoint on the root route
 app.get('/', function (request, response) {
@@ -8,6 +11,7 @@ app.get('/', function (request, response) {
     response.send('Hello world').end();
 });
 
+// Exercise: Chef Marco wants the search
 // Create a new endpoint for menu with pricing option
 app.get('/menu', (req, res) => {
     const { maxPrice } = req.query;
@@ -28,19 +32,30 @@ app.get('/menu', (req, res) => {
     res.json(filteredMenu);
 });
 
+// Exercise: Chef Marco needs a menu!
 // Create a new endpoint to retrieve specific menu item
 app.get('/menu/:menuItem', (req, res) => {
     const { menuItem } = req.params;
-    res.send(menu.filter((item) => item.id == menuItem));
+    const item = menu.find((item) => item.id == menuItem);
+
+    if (item) {
+        console.log('here')
+        res.send(item);
+    } else {
+        res.status(404).json({
+            error: `Menu item #${menuItem} not found.`
+        })
+    }
 });
 
+// Exercise: Adding a Not Implemented response
 // https://expressjs.com/en/5x/api.html#res.jsonp
 app.post('/reservations', (req, res) => {
     res.status(501).json({ error: "Route exists but isn't implemented yet" });
 });
 
 //Tell the express app that you want it to listen on port 8080 of your computer
-app.listen(8080, function () {
+app.listen(port, function () {
     //This function gets executed when the app starts listening
-    console.log('Server is listening on 8080');
+    console.log(`Server is listening on ${port}`);
 });
