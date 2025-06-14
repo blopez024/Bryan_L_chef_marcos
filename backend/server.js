@@ -1,5 +1,6 @@
 import { menu } from './data.js';
 import express from 'express'; // Import express
+
 const app = express(); //Instantiate a new instance of express
 const port = 8080;
 
@@ -40,7 +41,6 @@ app.get('/menu/:menuItem', (req, res) => {
     const item = menu.find((item) => item.id == menuItem);
 
     if (item) {
-        console.log('here');
         res.send(item);
     } else {
         res.status(404).json({
@@ -71,6 +71,27 @@ app.post('/reservations', (req, res) => {
         .send(
             `${name}, thank you for reserving at Chef Marco’s Restaurant on ${date} at ${time}! Your reservation is confirmed.`,
         );
+});
+
+// Exercise: Protecting Chef Macro's Recipes (Route Level)
+// Route Level Middleware to check if the client has a role of "chef" in the request handler
+const checkChefRole = (req, res, next) => {
+    const userRole = req.headers.role;
+
+    if (userRole && userRole === 'chef') {
+        next();
+    } else {
+        res.status(403).json({
+            error: 'Only chefs can access this!',
+        });
+    }
+};
+
+// Create a new endpoint to expose chef's recipe based on middleware outcome
+app.get('/chef/secret-recipe', checkChefRole, (req, res) => {
+    res.json({
+        recipe: 'Secret Sauce: Butter, garlic, parmesan!',
+    });
 });
 
 //Tell the express app that you want it to listen on port 8080 of your computer
