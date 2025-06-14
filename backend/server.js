@@ -3,6 +3,7 @@ import express from 'express'; // Import express
 const app = express(); //Instantiate a new instance of express
 const port = 8080;
 
+// Accept and parse JSON
 app.use(express.json());
 
 // Create a new endpoint on the root route
@@ -39,19 +40,37 @@ app.get('/menu/:menuItem', (req, res) => {
     const item = menu.find((item) => item.id == menuItem);
 
     if (item) {
-        console.log('here')
+        console.log('here');
         res.send(item);
     } else {
         res.status(404).json({
-            error: `Menu item #${menuItem} not found.`
-        })
+            error: `Menu item #${menuItem} not found.`,
+        });
     }
 });
 
 // Exercise: Adding a Not Implemented response
 // https://expressjs.com/en/5x/api.html#res.jsonp
+// app.post('/reservations', (req, res) => {
+//     res.status(501).json({ error: "Route exists but isn't implemented yet" });
+// });
+
+// Exercise: Chef Marco's Handling Reservations
+// Create a new endpoint to handle reservations
 app.post('/reservations', (req, res) => {
-    res.status(501).json({ error: "Route exists but isn't implemented yet" });
+    const { name, date, time } = req.body;
+
+    if (!name || !date || !time) {
+        return res.status(400).json({
+            error: 'Missing name, date, or time',
+        });
+    }
+
+    res
+        .status(201)
+        .send(
+            `${name}, thank you for reserving at Chef Marco’s Restaurant on ${date} at ${time}! Your reservation is confirmed.`,
+        );
 });
 
 //Tell the express app that you want it to listen on port 8080 of your computer
