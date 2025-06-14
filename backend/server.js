@@ -7,6 +7,14 @@ const port = 8080;
 // Accept and parse JSON
 app.use(express.json());
 
+// Exercise: Logging (App Level)
+// Create App Level Middleware to log request sent to the serve
+app.use((req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] ${req.method} ${req.originalUrl}`);
+    next();
+})
+
 // Create a new endpoint on the root route
 app.get('/', function (request, response) {
     // Send back to the client "Hello world"
